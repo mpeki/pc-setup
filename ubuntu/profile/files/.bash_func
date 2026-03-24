@@ -1,0 +1,154 @@
+#!/usr/bin/env bash
+
+#DIR_TO_SOURCE=~/dev/scripts/source/*
+
+title(){
+   echo -ne "\033]0;$@\a"
+}
+
+jr(){
+   jrnl $@ --edit
+}
+
+
+sali(){
+     # Path to the .bash_aliases file
+    local ALIAS_FILE="$HOME/.bash_aliases"
+
+    # Check if the alias file exists
+    if [ -f "$ALIAS_FILE" ]; then
+        # Read the alias file line by line
+        while IFS= read -r line; do
+            # Check if the line is a comment
+            if [[ $line =~ ^# ]]; then
+                # Store the comment text without the leading #
+                comment="${line#\# }"
+            elif [[ $line =~ ^alias ]]; then
+                # Extract the alias name from the line
+                alias_name=$(echo "$line" | sed -n "s/^alias \([a-zA-Z0-9_-]*\)=.*/\1/p")
+                # Print the alias and the previous comment with a tab
+                if [ -n "$alias_name" ] && [ -n "$comment" ]; then
+                    echo -e "$alias_name\t: $comment"
+                fi
+                # Clear the comment variable for the next iteration
+                unset comment
+            fi
+        done < "$ALIAS_FILE"
+    else
+        echo "No .bash_aliases file found."
+    fi
+}
+
+wtask(){
+
+	local task="${@}"
+	watson add --from "$(date +%Y-%m-%d) $(watson log -Gd | tail -n 1 | awk '{print $4}'):59" --to "$(date +%Y-%m-%d\ %H:%M:%S)" ${task}
+}
+
+wdaily(){
+
+    local anotherDay="${@}"
+    local addArguments
+    if [[ -z "${anotherDay}" ]]; then
+        addArguments="--from \"$(date +%Y-%m-%d) 09:30:00\" --to \"$(date +%Y-%m-%d\ 10:00:00)\" meeting +daily"
+    else
+        addArguments="--from \"$(date -d "${anotherDay}" +%Y-%m-%d) 09:30:00\" --to \"$(date -d "${anotherDay}" +%Y-%m-%d\ 10:00:00\") meeting +daily"
+    fi
+    echo "Executing: watson add ${addArguments}"
+
+    eval "watson add ${addArguments}"
+}
+
+wmeet(){
+
+    local meetingName="${1}"; shift 1
+    local anotherDay="${@}"
+    local addArguments
+    if [[ -z "${anotherDay}" ]]; then
+        addArguments="--from \"$(date +%Y-%m-%d) 09:30:00\" --to \"$(date +%Y-%m-%d\ 10:00:00) P22/0004 Refine +daily\""
+    else
+        addArguments="--from \"$(date -d "${anotherDay}" +%Y-%m-%d) 09:30:00\" --to \"$(date -d "${anotherDay}" +%Y-%m-%d\ 10:00:00\") P22/0004 Refine +daily"
+    fi
+    echo "Executing: watson add ${addArguments}"
+
+    eval "watson add ${addArguments}"
+}
+
+wt() {
+    local jiraUrl="https://profac.atlassian.net/browse/"
+    local jiraIssue="${1:-}"
+    local project=$(basename "$(pwd)")
+    local currentBranch=$(git branch --show-current)
+    local currentPath=$(pwd)
+    local prTag=""
+
+
+    if [[ $currentBranch =~ (.+)/([A-Z]+-[0-9]+)$ ]]; then
+        taskType="${BASH_REMATCH[1]}"
+        jiraIssue="${BASH_REMATCH[2]}"
+    elif [[ -z "${jiraIssue}" ]]; then
+        echo "$currentBranch"
+        echo "JIRA ISSUE ${jiraIssue}"
+        echo "No JIRA issue found in branch name"
+    elif [[ -z "${taskType}" ]]; then
+        echo "TASK TYPE ${taskType}"
+        echo "No task type found"
+    fi
+
+    if [[ $currentPath == *"PR"* ]]; then
+        prTag="+PR"
+    fi
+
+    command watson stop
+    command watson start "$jiraIssue" "+${jiraUrl}${jiraIssue}" "+${project}" "+${taskType}" "$prTag"
+    return 0
+}
+
+idea() {
+    setsid "/home/mpk@corp.processfactory.dk/.local/share/JetBrains/Toolbox/scripts/idea" "$@" > /dev/null 2>&1 &
+}
+
+sanitize_image() {
+  in="$1"
+  [ -z "$in" ] && { echo "usage: sanitize_image <file>"; return 2; }
+
+  # choose ImageMagick binary: prefer 'magick' (IM7), else 'convert' (IM6)
+  if command -v magick >/dev/null 2>&1; then IM="magick"; 
+  elif command -v convert >/dev/null 2>&1; then IM="convert";
+  else echo "ImageMagick not installed. Run: sudo apt install imagemagick"; return 1; fi
+
+  ext="${in##*.}"; base="$(basename "$in" ."$ext")"; lower="${ext,,}"
+
+  case "$lower" in
+    jpg|jpeg)
+      command -v exiftool >/dev/null 2>&1 && exiftool -all= -overwrite_original "$in" >/dev/null
+      "$IM" "$in" -strip -auto-orient -interlace none "sanitized-${base}.jpg" || return 1
+      command -v jpeginfo >/dev/null 2>&1 && jpeginfo -c "sanitized-${base}.jpg"
+      ;;
+    png)
+      command -v exiftool >/dev/null 2>&1 && exiftool -all= -overwrite_original "$in" >/dev/null
+      "$IM" "$in" -strip "sanitized-${base}.png" || return 1
+      command -v optipng >/dev/null 2>&1 && optipng -o2 -strip all "sanitized-${base}.png" >/dev/null
+      ;;
+    gif)
+      if command -v gifsicle >/dev/null 2>&1; then
+        gifsicle --unoptimize --no-comments --no-names --no-extensions "$in" -o "sanitized-${base}.gif"
+      else
+        "$IM" "$in" -strip "sanitized-${base}.gif"
+      fi
+      ;;
+    svg)
+      if command -v rsvg-convert >/dev/null 2>&1; then
+        rsvg-convert "$in" -o "sanitized-${base}.png"
+      else
+        "$IM" -density 300 "$in" -background none -flatten "sanitized-${base}.png"
+      fi
+      ;;
+    *)
+      echo "Unknown type ($ext). Re-encoding to PNG…"
+      "$IM" "$in" -strip "sanitized-${base}.png" || { echo "Failed."; return 1; }
+      ;;
+  esac
+
+  file "sanitized-${base}."* 2>/dev/null
+}
