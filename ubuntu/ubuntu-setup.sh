@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
-if [[ -f "${SETUP_DIR}/.tools-installed" ]]; then
+if [[ -f "${SETUP_DIR}/.base-tools-installed" ]]; then
 	echo "Tools already installed, skipping this step."
 else
 
@@ -29,7 +29,10 @@ else
 	curl -fsSL https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -o git-completion.bash
 	curl -fsSL https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o git-prompt.sh
 
+	touch "${SETUP_DIR}/.base-tools-installed"
+
 fi
 
-"${SCRIPT_DIR}/profile/sync-profile.sh" ${SCRIPT_DIR}/profile/files
+"${SCRIPT_DIR}/sync-files.sh" "${SCRIPT_DIR}/profile/files" "${HOME}" profile
+"${SCRIPT_DIR}/sync-files.sh" "${SCRIPT_DIR}/scripts" "${SCRIPTS_BIN}" scripts
 

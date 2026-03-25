@@ -71,6 +71,7 @@ if [[ ${OS} == "linux" ]]; then
 
 	if [[ ${DISTRO} == "ubuntu" ]]; then
 		./ubuntu/ubuntu-setup.sh
+        ./ubuntu/intellij/install-intellij.sh
 	fi
 fi
 
