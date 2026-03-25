@@ -26,8 +26,8 @@ else
 	fi
 
 
-	curl -fsSL https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -o git-completion.bash
-	curl -fsSL https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o git-prompt.sh
+	curl -fsSL https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -o "${SCRIPTS_BIN}/git-completion.bash"
+	curl -fsSL https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o "${SCRIPTS_BIN}/git-prompt.sh"
 
 	touch "${SETUP_DIR}/.base-tools-installed"
 
