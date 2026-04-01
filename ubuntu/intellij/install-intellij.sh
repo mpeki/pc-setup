@@ -2,7 +2,7 @@
 set -euo pipefail
 
 TOOLBOX_VERSION="3.4.0.77112"
-IDEA_VERSION="2025.3"
+export IDEA_VERSION="2025.3"
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
