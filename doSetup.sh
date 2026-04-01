@@ -2,7 +2,7 @@
 set -ue
 
 export BASE_DIR="${HOME}/work"
-export SETUP_DIR="${BASE_DIR}/ps-setup"
+export SETUP_DIR="${BASE_DIR}/pc-setup"
 export SCRIPTS_BIN="${BASE_DIR}/scripts/bin"
 
 
