@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cp idea${IDEA_VERSION}.config.tar.gz.gpg ${SETUP_DIR}
+cp ./ubuntu/intellij/settings/idea${IDEA_VERSION}.config.tar.gz.gpg ${SETUP_DIR}
 pushd ${SETUP_DIR}
 
 gpg -d idea${IDEA_VERSION}.config.tar.gz.gpg | tar -xzf -
