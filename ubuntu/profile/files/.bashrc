@@ -170,8 +170,8 @@ export PATH="$PATH:$HOME/.local/bin:$HOME/go/bin:$HOME/sdk/go1.22.1/bin"
 #export PATH=$HOME/.profac/bin:$PATH
 #. $HOME/.profac/functions/profac_bash
 
-export EDITOR="idea-mc"
-export VISUAL="idea-mc"
+export EDITOR="pico"
+export VISUAL="pico"
 
 # ~/.bashrc
 [ -f ~/.jasypt ] && source ~/.jasypt
