@@ -1,7 +1,7 @@
 set -euo pipefail
 
 PF_BASE_DIR="${BASE_DIR}/pf"
-WIP_DIR="${PF_BASE_DIR}/pr"
+PR_DIR="${PF_BASE_DIR}/pr"
 WIP_DIR="${PF_BASE_DIR}/wip"
 COP_DIR="${PF_BASE_DIR}/connectorplus"
 OL_DIR="${PF_BASE_DIR}/onelogic"
@@ -10,7 +10,8 @@ INF_DIR="${PF_BASE_DIR}/infrastructure"
 
 mkdir -p ${PR_DIR}
 mkdir -p ${WIP_DIR}
-mkdir -p ${RELEASE_DIR}
+mkdir -p ${COP_DIR}
+mkdir -p ${OL_DIR}
 mkdir -p ${LIB_DIR}
 mkdir -p ${INF_DIR}
 
