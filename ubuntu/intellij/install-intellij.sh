@@ -14,6 +14,7 @@ else
   [[ ! -f "${SETUP_DIR}/jetbrains-toolbox.tar.gz" ]] && \
 		curl -fL -o "${SETUP_DIR}/jetbrains-toolbox.tar.gz" "https://download-cdn.jetbrains.com/toolbox/jetbrains-toolbox-${TOOLBOX_VERSION}.tar.gz"
 	
+	[[ -d "${SETUP_DIR}/jetbrains-toolbox" ]] && rm -rf "${SETUP_DIR}/jetbrains-toolbox"
 	tar -xvf "${SETUP_DIR}/jetbrains-toolbox.tar.gz" -C "${SETUP_DIR}"
 	mv "${SETUP_DIR}/jetbrains-toolbox-${TOOLBOX_VERSION}" "${SETUP_DIR}/jetbrains-toolbox"
 
