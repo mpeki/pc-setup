@@ -15,6 +15,8 @@ mkdir -p ${OL_DIR}
 mkdir -p ${LIB_DIR}
 mkdir -p ${INF_DIR}
 
+pushd ${COP_DIR}
+
 [[ -d "${COP_DIR}/connectorplus-core" ]] || git clone git@bitbucket.org:profac/connectorplus-core.git
 [[ -d "${COP_DIR}/claim-history" ]] || git clone git@bitbucket.org:profac/claim-history.git
 [[ -d "${COP_DIR}/claimhistory-ui" ]] || git clone git@bitbucket.org:profac/claimhistory-ui.git
