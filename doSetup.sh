@@ -67,12 +67,11 @@ if [[ ${OS} == "linux" ]]; then
 	  	mkdir -p ${SCRIPTS_BIN}
 	fi
 
-	
-
-
 	if [[ ${DISTRO} == "ubuntu" ]]; then
 		./ubuntu/ubuntu-setup.sh
         ./ubuntu/intellij/install-intellij.sh
+        ./ubuntu/msp/setup.sh
+        ./ubuntu/pf/setup.sh
 	fi
 fi
 
