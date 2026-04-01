@@ -18,7 +18,7 @@ else
 	sudo apt-get install -y curl copyq git fzf
 
 	# Install Chrome
-	CHROME_DEB="${SETUP_DIR}/linux-setup/google-chrome-stable_current_amd64.deb"
+	CHROME_DEB="${SETUP_DIR}/google-chrome-stable_current_amd64.deb"
 
 	if ! dpkg -s google-chrome-stable >/dev/null 2>&1; then
 	  wget -O "$CHROME_DEB" https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
