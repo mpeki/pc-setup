@@ -3,6 +3,8 @@ set -euo pipefail
 
 MSP_DIR="${BASE_DIR}/private"
 
+[[ -d "${MSP_DIR}" ]] || mkdir "${MSP_DIR}"
+
 pushd ${MSP_DIR}
 
 [[ -d "${MSP_DIR}/pc-setup"]] || git clone git@github.com:mpeki/pc-setup.git
