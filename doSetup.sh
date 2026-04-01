@@ -5,6 +5,7 @@ export BASE_DIR="${HOME}/work"
 export SETUP_DIR="${BASE_DIR}/pc-setup"
 export SCRIPTS_BIN="${BASE_DIR}/scripts/bin"
 
+git pull
 
 detect_os() {
   local uname_s
