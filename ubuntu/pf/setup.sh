@@ -19,7 +19,7 @@ pushd ${COP_DIR}
 
 [[ -d "${COP_DIR}/connectorplus-core" ]] || git clone git@bitbucket.org:profac/connectorplus-core.git
 [[ -d "${COP_DIR}/claim-history" ]] || git clone git@bitbucket.org:profac/claim-history.git
-[[ -d "${COP_DIR}/claimhistory-ui" ]] || git clone git@bitbucket.org:profac/claimhistory-ui.git
+[[ -d "${COP_DIR}/claim-history-ui" ]] || git clone git@bitbucket.org:profac/claim-history-ui.git
 [[ -d "${COP_DIR}/cancellation" ]] || git clone git@bitbucket.org:profac/cancellation.git
 [[ -d "${COP_DIR}/cancellation-ui" ]] || git clone git@bitbucket.org:profac/cancellation-ui.git
 [[ -d "${COP_DIR}/tl-attest" ]] || git clone git@bitbucket.org:profac/tl-attest.git
