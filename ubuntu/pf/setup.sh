@@ -1,5 +1,8 @@
 set -euo pipefail
 
+git config --global user.email "mpk@process-factory.dk"
+git config --global user.name "Marc Pekilidi"
+
 PF_BASE_DIR="${BASE_DIR}/pf"
 PR_DIR="${PF_BASE_DIR}/pr"
 WIP_DIR="${PF_BASE_DIR}/wip"

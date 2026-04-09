@@ -58,22 +58,24 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
+SHORT_USER="${USER%@*}"
+
 if [ "$color_prompt" = yes ]; then
     GREEN='\[\033[01;32m\]'
     BLUE='\[\033[01;34m\]'
     YELLOW='\[\033[01;33m\]'
     RESET='\[\033[00m\]'
 
-    PS1='${debian_chroot:+($debian_chroot)}'"${GREEN}"'\u@\h'"${RESET}"':'"${BLUE}"'\w'"${RESET}"'$(__git_ps1 " '"${YELLOW}"'(%s)'"${RESET}"'")\$ '
+    PS1='${debian_chroot:+($debian_chroot)}'"${GREEN}${SHORT_USER}@\h${RESET}:${BLUE}\w${RESET}"'$(__git_ps1 " '"${YELLOW}"'(%s)'"${RESET}"'")\$ '
 else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+    PS1='${debian_chroot:+($debian_chroot)}'"${SHORT_USER}"'@\h:\w\$ '
 fi
 unset color_prompt force_color_prompt
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
 xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}${SHORT_USER}@\h: \w\a\]$PS1"
     ;;
 *)
     ;;

@@ -36,3 +36,9 @@ fi
 "${SCRIPT_DIR}/sync-files.sh" "${SCRIPT_DIR}/profile/files" "${HOME}" profile
 "${SCRIPT_DIR}/sync-files.sh" "${SCRIPT_DIR}/scripts" "${SCRIPTS_BIN}" scripts
 
+# Set dark mode
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+
+# fetch and set background image
+curl -fsSL https://www.nasa.gov/wp-content/uploads/2026/04/art002e009288orig-1.jpg -o /usr/share/backgrounds/artemis2-earth-rise.jpg
+[[ -f /usr/share/backgrounds/artemis2-earth-rise.jpg ]] && gsettings set org.gnome.desktop.background picture-uri-dark "file:///usr/share/backgrounds/artemis2-earth-rise.jpg
