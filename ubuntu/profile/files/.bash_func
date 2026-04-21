@@ -105,7 +105,10 @@ wt() {
 }
 
 idea() {
-    setsid "/home/mpk@corp.processfactory.dk/.local/share/JetBrains/Toolbox/scripts/idea" "$@" > /dev/null 2>&1 &
+  echo "opening IntelliJ ..."
+  (
+    nohup "${HOME}/.local/share/JetBrains/Toolbox/scripts/idea" "$@" >/dev/null 2>&1 </dev/null &
+  )
 }
 
 sanitize_image() {

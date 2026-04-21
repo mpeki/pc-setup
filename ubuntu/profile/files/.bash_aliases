@@ -1,6 +1,4 @@
 ## General 
-# goto the development base folder
-alias gdev='cd ~/Work/pf/dev'
 # run docker compose
 alias dc='docker compose'
 alias docker-compose='docker compose'
@@ -16,9 +14,12 @@ alias le='idea -e'
 # open files
 alias files='nautilus'
 
+# goto the development base folder
+alias gpri='cd ~/work/private'
+
 ## DoD
 # goto DoD project
-alias gdod='cd; cd Private/dod/'
+alias gdod='gpri; cd dod'
 # execute dod command
 alias dod='gdod; ./dod.sh'
 
@@ -40,24 +41,30 @@ alias gdpant='gdoc; cd pant'
 alias gdcan='gdoc; cd opsigelse'
 
 ### Projects
-# goto the source checkout folder
-alias gsrc='cd ~/source'
+# goto the processfactory source
+alias gpf='cd ~/work/pf'
+# goto the connectorplus base folder
+alias gco='gpf; cd connectorplus'
 # goto the wip source
-alias gwip='gsrc; cd wip'
+alias gwip='gpf; cd wip'
 # goto the release source
-alias grel='gsrc; cd release'
+alias grel='gpf; cd release'
 # goto the cancellation project
-alias gcan='gwip; cd cancellation'
+alias gcan='gco; cd cancellation'
 # goto the claim-history project
-alias gskh='gwip; cd claim-history'
+alias gskh='gco; cd claim-history'
 # goto the connectorplus core project
-alias gcore='gwip; cd connectorplus-core'
+alias gcore='gco; cd connectorplus-core'
 # goto the common-lib project
 alias glcom='gwip; cd lib-common'
 # goto the unified dev project
-alias gud='gdev; cd cpl-dev'
+alias gud='gpri; cd cpl-dev'
 # goto PRs
-alias gpr='gsrc; cd PR'
+alias gpr='gpf; cd pr'
+# goto infrastructure repos
+alias ginf='gpf; cd infrastructure'
+# goto library repos
+alias glib='gpf; cd libraries'
 # goto scripts folder
 alias gsp='gdev; cd scripts'
 # goto sync folder

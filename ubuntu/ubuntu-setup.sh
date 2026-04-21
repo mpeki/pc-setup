@@ -29,7 +29,17 @@ else
 	curl -fsSL https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -o "${SCRIPTS_BIN}/git-completion.bash"
 	curl -fsSL https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh -o "${SCRIPTS_BIN}/git-prompt.sh"
 
-	touch "${SETUP_DIR}/.base-tools-installed"
+  if [[ -d /home/linuxbrew/.linuxbrew ]]; then
+    sudo chown -R "${USER}" /home/linuxbrew/.linuxbrew
+  fi
+
+  # Install SdkMan
+  ensure_sdkman
+
+  sdk install java 21.0.10-tem
+  sdk install maven 3.9.14
+
+  touch "${SETUP_DIR}/.base-tools-installed"
 
 fi
 
@@ -41,4 +51,33 @@ gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 
 # fetch and set background image
 curl -fsSL https://www.nasa.gov/wp-content/uploads/2026/04/art002e009288orig-1.jpg -o /usr/share/backgrounds/artemis2-earth-rise.jpg
-[[ -f /usr/share/backgrounds/artemis2-earth-rise.jpg ]] && gsettings set org.gnome.desktop.background picture-uri-dark "file:///usr/share/backgrounds/artemis2-earth-rise.jpg
+[[ -f /usr/share/backgrounds/artemis2-earth-rise.jpg ]] && gsettings set org.gnome.desktop.background picture-uri-dark "file:///usr/share/backgrounds/artemis2-earth-rise.jpg"
+
+ensure_sdkman() {
+  if [[ -d "$HOME/.sdkman" && -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
+    printf 'SDKMAN is already installed.\n'
+    return 0
+  fi
+
+  printf 'SDKMAN is not installed. Installing...\n'
+
+  if ! command -v curl >/dev/null 2>&1; then
+    printf 'Error: curl is not installed.\n' >&2
+    return 1
+  fi
+
+  if ! curl -s "https://get.sdkman.io" | bash; then
+    printf 'Error: SDKMAN installation failed.\n' >&2
+    return 1
+  fi
+
+  # Load SDKMAN into the current shell session
+  if [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
+    # shellcheck disable=SC1090
+    source "$HOME/.sdkman/bin/sdkman-init.sh"
+    printf 'SDKMAN installed successfully.\n'
+  else
+    printf 'Error: SDKMAN install completed, but init script was not found.\n' >&2
+    return 1
+  fi
+}

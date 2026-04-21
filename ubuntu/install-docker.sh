@@ -1,31 +1,120 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-sudo apt-get update
-sudo apt-get install -y ca-certificates curl
+DOCKER_PACKAGES=(
+  docker-ce
+  docker-ce-cli
+  containerd.io
+  docker-buildx-plugin
+  docker-compose-plugin
+)
 
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-sudo chmod a+r /etc/apt/keyrings/docker.asc
+log() {
+  printf '%s\n' "$*"
+}
 
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+have_command() {
+  command -v "$1" >/dev/null 2>&1
+}
 
-sudo apt-get update
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+docker_usable_as_current_user() {
+  have_command docker && docker info >/dev/null 2>&1
+}
 
-sudo systemctl enable --now docker
-sudo systemctl enable --now containerd
+docker_installed() {
+  have_command docker
+}
 
-if ! getent group docker >/dev/null; then
+ensure_prereqs() {
+  sudo apt-get update
+  sudo apt-get install -y ca-certificates curl
+}
+
+ensure_docker_repo() {
+  local keyring="/etc/apt/keyrings/docker.asc"
+  local repo_file="/etc/apt/sources.list.d/docker.list"
+  local arch codename repo_line current_line
+
+  arch="$(dpkg --print-architecture)"
+  codename="$(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")"
+  repo_line="deb [arch=${arch} signed-by=${keyring}] https://download.docker.com/linux/ubuntu ${codename} stable"
+
+  sudo install -m 0755 -d /etc/apt/keyrings
+
+  if [[ ! -f "$keyring" ]]; then
+    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o "$keyring"
+    sudo chmod a+r "$keyring"
+  fi
+
+  current_line=""
+  if [[ -f "$repo_file" ]]; then
+    current_line="$(<"$repo_file")"
+  fi
+
+  if [[ "$current_line" != "$repo_line" ]]; then
+    printf '%s\n' "$repo_line" | sudo tee "$repo_file" >/dev/null
+  fi
+}
+
+install_docker_if_missing() {
+  if docker_installed; then
+    log "Docker is already installed."
+    return
+  fi
+
+  log "Docker not found. Installing Docker..."
+  ensure_prereqs
+  ensure_docker_repo
+  sudo apt-get update
+  sudo apt-get install -y "${DOCKER_PACKAGES[@]}"
+}
+
+ensure_services_enabled() {
+  sudo systemctl enable --now docker
+  sudo systemctl enable --now containerd
+}
+
+ensure_docker_group_exists() {
+  if ! getent group docker >/dev/null; then
     sudo groupadd docker
-fi
+  fi
+}
 
-if ! id -nG "$USER" | grep -qw docker; then
-    sudo usermod -aG docker "$USER"
-    echo "Added $USER to docker group. Log out/in or run: newgrp docker"
-fi
+ensure_user_in_docker_group() {
+  if id -nG "$USER" | grep -qw docker; then
+    log "User $USER is already in docker group."
+    return
+  fi
 
-sudo docker run --rm hello-world
+  sudo usermod -aG docker "$USER"
+  log "Added $USER to docker group."
+}
+
+main() {
+  if docker_usable_as_current_user; then
+    log "Docker is already installed and usable by $USER. No changes needed."
+    exit 0
+  fi
+
+  install_docker_if_missing
+  ensure_services_enabled
+  ensure_docker_group_exists
+
+  if docker_usable_as_current_user; then
+    log "Docker is now usable by $USER."
+    exit 0
+  fi
+
+  ensure_user_in_docker_group
+
+  if docker_usable_as_current_user; then
+    log "Docker is now usable by $USER."
+    exit 0
+  fi
+
+  log "Docker is installed, but the current shell does not yet have docker-group access."
+  log "Log out and back in, or run: newgrp docker"
+  log "After that, verify with: docker info"
+}
+
+main "$@"
